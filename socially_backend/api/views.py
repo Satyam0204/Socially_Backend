@@ -27,10 +27,34 @@ def getPosts(request):
     return Response(serializer.data)
 
 
-@api_view(['GET'])
+@api_view(['GET','DELETE'])
 @permission_classes([IsAuthenticated])
 def getSpecificPost(request, pk):
+    if request.method=='GET':
+        user=request.user
+        post=user.post_set.get(id=pk)
+        serializer=PostSerializer(post,many=False)
+        return Response(serializer.data)
+    if request.method=='DELETE':
+        user=request.user
+        post=Post.objects.get(user=user,id=pk)
+        post.delete()
+        return Response('post was deleted')
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def createPost(request):
+    data=request.data
     user=request.user
-    post=user.post_set.get(id=pk)
-    serializer=PostSerializer(post,many=False)
+    post=Post.objects.create(user=user,title=data['title'],desc=data['desc'])
+    serializer = PostSerializer(post, many=False)
     return Response(serializer.data)
+
+# @api_view(['DELETE'])
+# @permission_classes([IsAuthenticated])
+# def deletePost(request,pk):
+#     user=request.user
+#     post=Post.objects.get(user=user,id=pk)
+#     post.delete()
+#     return Response('post was deleted')
