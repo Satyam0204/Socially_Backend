@@ -15,4 +15,8 @@ urlpatterns = [
     path('posts/', createPost,name="createpost"),
     path('like/<str:pk>/',like,name="like"),
     path('unlike/<str:pk>/',unlike,name="unlike"),
+    path('comment/<str:pk>/',addComment,name="comment"),
+    path('follow/<str:pk>/',Follow,name="addfollower"),
+    path('unfollow/<str:pk>/',unFollow,name="removefollower"),
+    path('user',getProfile,name="getuser")
 ]

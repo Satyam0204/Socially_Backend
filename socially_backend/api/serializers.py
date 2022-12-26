@@ -9,3 +9,10 @@ class PostSerializer(ModelSerializer):
         model=Post
         fields=['title','desc','datecreated','like','id']
         
+
+
+class CommentSerializer(ModelSerializer):
+    class Meta:
+        model=Comment
+        fields=['id','comment']
+        
