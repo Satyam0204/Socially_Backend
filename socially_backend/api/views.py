@@ -32,6 +32,7 @@ def getPosts(request):
 def getSpecificPost(request, pk):
     if request.method=='GET':
         user=request.user
+        print(user)
         post=user.post_set.get(id=pk)
         serializer=PostSerializer(post,many=False)
         return Response(serializer.data)
@@ -58,3 +59,32 @@ def createPost(request):
 #     post=Post.objects.get(user=user,id=pk)
 #     post.delete()
 #     return Response('post was deleted')
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def like(request,pk):
+    if request.method == "POST":
+        user=request.user
+        print(user)
+        post=Post.objects.get(id=pk)
+        print(post)
+        if(user not in post.like.all()):
+            post.like.add(user)
+            return Response({"The Post was liked by user":user.username})
+        else:
+            return Response("this post is already liked")
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def unlike(request,pk):
+    if request.method == "POST":
+        user=request.user
+        print(user)
+        post=Post.objects.get(id=pk)
+        print(post)
+        if(user in post.like.all()):
+            post.like.remove(user)
+            return Response({"The Post was unliked by user":user.username})
+        else:
+            return Response("This post was not liked")
+        

@@ -13,4 +13,6 @@ urlpatterns = [
     path('posts/<str:pk>/',getSpecificPost,name="getspecificpost"),
     # path('deleteposts/<str:pk>/',deletePost,name="deletespecificpost"),
     path('posts/', createPost,name="createpost"),
+    path('like/<str:pk>/',like,name="like"),
+    path('unlike/<str:pk>/',unlike,name="unlike"),
 ]
