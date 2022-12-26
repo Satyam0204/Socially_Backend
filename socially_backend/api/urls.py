@@ -1,0 +1,14 @@
+from django.urls import path
+from .views import *
+from rest_framework_simplejwt.views import (
+    TokenObtainPairView,
+    TokenRefreshView,
+)
+
+urlpatterns = [
+    path('',viewRoutes, name='viewRoutes'),
+    path('token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    path('all_posts/',getPosts,name="getallposts"),
+    path('posts/<str:pk>/',getSpecificPost,name="getspecificpost")
+]
