@@ -1,7 +1,7 @@
+#!/usr/bin/env bash
 set -o errexit
 cd socialmedia/
 poetry install
-cd ..
-cd socially_backend/
-python manage.py collectstatic --no-input
-python manage.py migrate
+
+python ../socially_backend/manage.py collectstatic --no-input
+python ../socially_backend/manage.py migrate
