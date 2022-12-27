@@ -133,19 +133,19 @@ WSGI_APPLICATION = "socially_backend.wsgi.application"
 # }
 
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'postgres',
-        'USER': 'postgres',
-        'PASSWORD': 'password',
-        'HOST': 'db',
-        'PORT': 5432,
-    }
-}
-
 # DATABASES = {
-#     'default': dj_database_url.config(default='postgresql://postgres:postgres@localhost:5432/postgres',        conn_max_age=600    )}
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql_psycopg2',
+#         'NAME': 'postgres',
+#         'USER': 'postgres',
+#         'PASSWORD': 'password',
+#         'HOST': 'db',
+#         'PORT': 5432,
+#     }
+# }
+
+DATABASES = {
+    'default': dj_database_url.config(default='postgresql://postgres:postgres@localhost:5432/postgres',        conn_max_age=600    )}
 
 # Password validation
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators
