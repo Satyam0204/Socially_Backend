@@ -21,19 +21,10 @@ def viewRoutes(request):
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def getPosts(request):
-    result=[]
-    commentarr=[]
     user= request.user
     posts=user.post_set.all()
-    for post in posts:
-        comments=Comment.objects.filter(post=post)
-        for i in range(len(comments)):
-            commentarr.append(comments[i].comment)
-        postobj={"id":post.id,"title":post.title,"desc":post.desc,"created_at":post.datecreated,"comments":commentarr,"likes":post.like.count()}
-        result.append(postobj)
-
-
-    return Response(result)
+    serializer=PostSerializer(posts,many=True)
+    return Response(serializer.data)
 
 
 @api_view(['GET','DELETE'])
@@ -41,7 +32,7 @@ def getPosts(request):
 def getSpecificPost(request, pk):
     if request.method=='GET':
         user=request.user
-
+        print(user)
         post=user.post_set.get(id=pk)
         serializer=PostSerializer(post,many=False)
         return Response(serializer.data)
