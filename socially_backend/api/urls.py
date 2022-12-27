@@ -5,9 +5,14 @@ from rest_framework_simplejwt.views import (
     TokenRefreshView,
 )
 
+# from rest_framework_simplejwt.views import TokenRefreshView
+# from .views import EmailTokenObtainPairView
+
+
+
 urlpatterns = [
     path('',viewRoutes, name='viewRoutes'),
-    path('token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('token/',  TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('all_posts/',getPosts,name="getallposts"),
     path('posts/<str:pk>/',getSpecificPost,name="getspecificpost"),
