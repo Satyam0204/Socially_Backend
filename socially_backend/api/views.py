@@ -30,65 +30,82 @@ def getPosts(request):
 @api_view(['GET','DELETE'])
 @permission_classes([IsAuthenticated])
 def getSpecificPost(request, pk):
+    user=request.user
     if request.method=='GET':
-        user=request.user
-        print(user)
-        post=user.post_set.get(id=pk)
-        serializer=PostSerializer(post,many=False)
-        return Response(serializer.data)
+        try:
+            post=user.post_set.get(id=pk)
+            serializer=PostSerializer(post,many=False)
+            return Response(serializer.data)
+        except:
+            return Response("post with this id doesn't exist")
     if request.method=='DELETE':
-        user=request.user
-        post=Post.objects.get(user=user,id=pk)
-        post.delete()
-        return Response('post was deleted')
-
+        try:
+            post=user.post_set.get(id=pk)
+            post.delete()
+            return Response('post was deleted')
+        except:
+            return Response("id was invalid")
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def createPost(request):
     data=request.data
     user=request.user
-    post=Post.objects.create(user=user,title=data['title'],desc=data['desc'])
-    serializer = PostSerializer(post, many=False)
-    return Response(serializer.data)
+    if(data['title'] and data['desc']):
+        post=Post.objects.create(user=user,title=data['title'],desc=data['desc'])
+        serializer = PostSerializer(post, many=False)
+        return Response(serializer.data)
+    else:
+        return Response("Title or desc cannot be empty")
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def like(request,pk):
-
-    user=request.user
+    try:
+        user=request.user
+        
+        post=Post.objects.get(id=pk)
     
-    post=Post.objects.get(id=pk)
-   
-    if(user not in post.like.all()):
-        post.like.add(user)
-        return Response({"The Post was liked by user":user.username})
-    else:
-        return Response("this post is already liked")
+        if(user not in post.like.all()):
+            post.like.add(user)
+            return Response({"The Post was liked by user":user.username})
+        else:
+            return Response("this post is already liked")
+    except:
+        return Response("id was invalid")
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def unlike(request,pk):
     user=request.user
-    
-    post=Post.objects.get(id=pk)
-    
-    if(user in post.like.all()):
-        post.like.remove(user)
-        return Response({"The Post was unliked by user":user.username})
-    else:
-        return Response("This post was not liked")
+    try:
+        post=Post.objects.get(id=pk)
         
+        if(user in post.like.all()):
+            post.like.remove(user)
+            return Response({"The Post was unliked by user":user.username})
+        else:
+            return Response("This post was not liked")
+    except:
+        return Response("id was invalid")
+
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def addComment(request,pk):
     data =request.data
     user=request.user
-    post=Post.objects.get(id=pk)
-    comment=Comment.objects.create(user=user,post=post,comment=data['comment'])
-    serializer = CommentSerializer(comment, many=False)
-    return Response(serializer.data)
+    try:
+        post=Post.objects.get(id=pk)
+        if(data['comment']):
+            comment=Comment.objects.create(user=user,post=post,comment=data['comment'])
+            serializer = CommentSerializer(comment, many=False)
+            return Response(serializer.data)
+        else:
+            return Response("you cannot post an empty comment")
+    except:
+        return Response("id was invalid")
 
+        
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 
@@ -104,26 +121,32 @@ def getProfile(request):
 @permission_classes([IsAuthenticated])
 def Follow(request,pk):
     followeruser=request.user
-    user=User.objects.get(id=pk)
-    followprofile=Profile.objects.get(user=user)
     followingprofile=Profile.objects.get(user=followeruser)
-    if(user.id!=followeruser.id):
-        followprofile.follower.add(followeruser)
-        followingprofile.following.add(user)
-        return Response({"Logged in user is following ":user.username})
-    else:
-        return Response("user cannot follow itself")
+    try:
+        user=User.objects.get(id=pk)
+        followprofile=Profile.objects.get(user=user)
+        if(user.id!=followeruser.id):
+            followprofile.follower.add(followeruser)
+            followingprofile.following.add(user)
+            return Response({"Logged in user is following ":user.username})
+        else:
+            return Response("user cannot follow itself")
+    except:
+        return Response("id was invalid")
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def unFollow(request,pk):
     followeruser=request.user
     followerprofile=Profile.objects.get(user=followeruser)
-    user=User.objects.get(id=pk)
-    followprofile=Profile.objects.get(user=user)
-    if(followeruser in followprofile.follower.all()):
-        followprofile.follower.remove(followeruser)
-        followerprofile.following.remove(user)
-        return Response({"Logged in user has unfollowed":user.username})
-    else:
-        return Response("not a follower")
+    try:
+        user=User.objects.get(id=pk)
+        followprofile=Profile.objects.get(user=user)
+        if(followeruser in followprofile.follower.all()):
+            followprofile.follower.remove(followeruser)
+            followerprofile.following.remove(user)
+            return Response({"Logged in user has unfollowed":user.username})
+        else:
+            return Response("not a follower")
+    except:
+        return Response("id was invalid")

@@ -26,7 +26,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.environ.get('SECRET_KEY', default='your secret key')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
@@ -137,11 +137,11 @@ WSGI_APPLICATION = "socially_backend.wsgi.application"
 # DATABASES = {
 #     'default': {
 #         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-#         'NAME': 'postgres',
-#         'USER': 'postgres',
+#         'NAME': 'socially',
+#         'USER': 'socialuser',
 #         'PASSWORD': 'password',
-#         'HOST': 'db',
-#         'PORT': 5432,
+#         'HOST': 'localhost',
+#         'PORT': '',
 #     }
 # }
 
