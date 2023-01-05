@@ -4,6 +4,12 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from .models import * 
 from .serializers import *
+from rest_framework.views import APIView
+from rest_framework_simplejwt.tokens import RefreshToken
+
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+from rest_framework_simplejwt.views import TokenObtainPairView
+from rest_framework import status
 # Create your views here.
 
 @api_view(['GET'])
@@ -18,11 +24,68 @@ def viewRoutes(request):
 
     return Response(routes)
 
+
+
+class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
+    @classmethod
+    def get_token(cls, user):
+        token = super().get_token(user)
+
+        # Add custom claims
+        token['username'] = user.username
+        # ...
+
+        return token
+
+class MyTokenObtainPairView(TokenObtainPairView):
+    serializer_class = MyTokenObtainPairSerializer
+
+
+@api_view(['GET'])
+def viewRoutes(request):
+    routes=[
+            {
+            'endpoint':'viewRoutes',
+            'desc':'view all routes',
+
+            },
+    ]
+
+    return Response(routes)
+class Register(APIView):
+    @classmethod
+    def post(self, request):
+        userdata=request.data
+        serialize=UserSerializer(data=userdata)
+
+
+
+        if (not serialize.is_valid()):
+            
+            return Response(serialize.errors)
+        serialize.save()
+        user=User.objects.get(username=serialize.data['username'])
+        Profile.objects.create(user=user)
+        refresh = RefreshToken.for_user(user)
+        return Response({
+        'refresh': str(refresh),
+        'access': str(refresh.access_token),
+    })
+
+
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def getPosts(request):
     user= request.user
     posts=user.post_set.all()
+    serializer=PostSerializer(posts,many=True)
+    return Response(serializer.data)
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def getallPosts(request):
+ 
+    posts=Post.objects.all()
     serializer=PostSerializer(posts,many=True)
     return Response(serializer.data)
 
@@ -150,3 +213,38 @@ def unFollow(request,pk):
             return Response("not a follower")
     except:
         return Response("id was invalid")
+
+
+@api_view(['GET'])
+def viewProfile(request,pk):
+    followers_arr=[]
+    following_arr=[]
+    user=User.objects.get(id=pk)
+    profile= Profile.objects.get(user = user)
+    followers=profile.follower.all()
+    following=profile.following.all()
+    for follower in followers:
+        followers_arr.append(follower.id)
+    for following_user in following:
+        following_arr.append(following_user.id)
+    return Response({"user_id":profile.user.id,"username":profile.user.username,"followers":followers.count(),"following":following.count(),"followers_arr":followers_arr,"following_arr":following_arr})
+
+
+@api_view(['POST'])
+def search(request):
+    data = request.data
+    search_results=[]
+    if(data['profile']):
+        profiles=User.objects.filter(username__icontains=data['profile'])
+        for profile in profiles:
+            search_results.append({"username":profile.username,"user_id":profile.id})
+        return Response(search_results)
+        
+    else:
+        return Response({
+          "Failure": "Error", 
+          "Error_list": {"field1": "This field is required"}
+     },
+     status=status.HTTP_400_BAD_REQUEST)
+
+
