@@ -214,7 +214,7 @@ def unFollow(request,pk):
     except:
         return Response("id was invalid")
 
-
+@permission_classes([IsAuthenticated])
 @api_view(['GET'])
 def viewProfile(request,pk):
     followers_arr=[]
