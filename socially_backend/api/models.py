@@ -16,6 +16,7 @@ class Profile(models.Model):
 class Post(models.Model):
     user= models.ForeignKey(User, on_delete=models.CASCADE)
     title = models.CharField(max_length=500, null=True, blank=True)
+    # image=models.ImageField()
     desc =models.TextField(max_length=500, null=True)
     datecreated=models.DateTimeField(auto_now_add=True, null=True)
     like=models.ManyToManyField(User,blank=True,related_name='like')
