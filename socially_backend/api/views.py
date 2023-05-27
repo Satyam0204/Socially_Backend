@@ -87,7 +87,12 @@ def getallPosts(request):
  
     posts=Post.objects.all()
     serializer=PostSerializer(posts,many=True)
-    return Response(serializer.data)
+    response=[]
+    for post in posts:
+        postdata=PostSerializer(post).data
+        postdata['user']=post.user.username
+        response.append(postdata)
+    return Response(response)
 
 
 @api_view(['GET','DELETE'])
