@@ -84,21 +84,19 @@ def getPosts(request):
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def getallPosts(request):
- 
     posts=Post.objects.all()
     serializer=PostSerializer(posts,many=True)
     response=[]
-    likes=[]
     for post in posts:
-        
+        likes=[]
         postdata=PostSerializer(post).data
         postdata['user']=post.user.username
-        
         for likeduser in post.like.all():
             likes.append(likeduser.username)
-
         postdata['like']=likes
         response.append(postdata)
+    
+    print(response)
     return Response(response)
 
 
