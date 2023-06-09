@@ -124,12 +124,19 @@ def getSpecificPost(request, pk):
 def createPost(request):
     data=request.data
     user=request.user
-    if(data['title'] and data['desc']):
-        post=Post.objects.create(user=user,title=data['title'],desc=data['desc'])
-        serializer = PostSerializer(post, many=False)
-        return Response(serializer.data)
+    # if(data['title'] and data['desc']):
+    post=Post.objects.create(user=user)
+    #     serializer = PostSerializer(post, many=False)
+    #     return Response(serializer.data)
+    # else:
+    #     return Response("Title or desc cannot be empty")
+    serializer=PostSerializer(instance=post,data=data)
+    if serializer.is_valid():
+
+        serializer.save()
+        return Response("post created")
     else:
-        return Response("Title or desc cannot be empty")
+        return Response(serializer.errors)
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
